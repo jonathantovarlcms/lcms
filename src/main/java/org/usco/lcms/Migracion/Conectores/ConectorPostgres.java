@@ -1,16 +1,20 @@
-package org.usco.lcms.Migracion.BasesDatos;
+package org.usco.lcms.Migracion.Conectores;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.usco.lcms.Migracion.Modelo.IModelo;
+import org.usco.lcms.Migracion.Modelo.ModeloPostgres;
 
 /**
  * Maneja la conexión a una base de datos Postgres
  * 
  * @author Jonathan Tovar Sanmiguel
  */
-public class Postgres implements IBaseDatos {
+public class ConectorPostgres implements IConector {
 	private Connection conexion;
+	private IModelo modelo;
 	private String servidor;	
 	private String baseDatos;
 	private String usuario;
@@ -24,7 +28,7 @@ public class Postgres implements IBaseDatos {
 	 * @param usuario
 	 * @param clave
 	 */
-	public Postgres(String servidor, String baseDatos, String usuario, String clave) {
+	public ConectorPostgres(String servidor, String baseDatos, String usuario, String clave) {
 		super();
 		this.setServidor(servidor);;
 		this.setBaseDatos(baseDatos);
@@ -59,6 +63,13 @@ public class Postgres implements IBaseDatos {
 	 */
 	public void setClave(String clave) {
 		this.clave = clave;
+	}
+	
+	/**
+	 * @return Devuelve el objeto de conexion a la base de datos
+	 */
+	public Connection getConexion() {
+		return this.conexion;
 	}
 	
 	/**
@@ -101,5 +112,17 @@ public class Postgres implements IBaseDatos {
 			String CadenaConexion = "jdbc:postgresql://"+this.getServidor()+":5432/" + this.getBaseDatos();
 			this.conexion = DriverManager.getConnection(CadenaConexion, this.getUsuario(), this.getClave());
 		}
+	}
+
+	/**
+	 * Deuelve el objeto del modelo a una base de datos Postgres
+	 *  
+	 * @return Objeto del modelo de la base de datos
+	 */
+	public IModelo obtenerModelo() {
+		if (this.modelo==null) {
+			this.modelo = new ModeloPostgres(this);
+		}
+		return this.modelo;
 	}
 }

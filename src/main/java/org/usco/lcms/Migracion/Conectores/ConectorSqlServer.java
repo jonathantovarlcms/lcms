@@ -1,16 +1,20 @@
-package org.usco.lcms.Migracion.BasesDatos;
+package org.usco.lcms.Migracion.Conectores;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.usco.lcms.Migracion.Modelo.IModelo;
+import org.usco.lcms.Migracion.Modelo.ModeloSqlServer;
 
 /**
  * Maneja la conexión a una base de datos SQL Server
  * 
  * @author Jonathan Tovar Sanmiguel
  */
-public class SqlServer {
+public class ConectorSqlServer implements IConector {
 	private Connection conexion;
+	private IModelo modelo;
 	private String servidor;	
 	private String baseDatos;
 	private String usuario;
@@ -24,7 +28,7 @@ public class SqlServer {
 	 * @param usuario
 	 * @param clave
 	 */
-	public SqlServer(String servidor, String baseDatos, String usuario, String clave) {
+	public ConectorSqlServer(String servidor, String baseDatos, String usuario, String clave) {
 		super();
 		this.setServidor(servidor);;
 		this.setBaseDatos(baseDatos);
@@ -59,6 +63,13 @@ public class SqlServer {
 	 */
 	public void setClave(String clave) {
 		this.clave = clave;
+	}
+	
+	/**
+	 * @return Devuelve el objeto de conexion a la base de datos
+	 */
+	public Connection getConexion() {
+		return this.conexion;
 	}
 	
 	/**
@@ -101,5 +112,17 @@ public class SqlServer {
 			String CadenaConexion = "jdbc:sqlserver://"+this.getServidor()+":1433;databaseName=" + this.getBaseDatos() + ";CharacterSet=UTF-8";
 			this.conexion = DriverManager.getConnection(CadenaConexion, this.getUsuario(), this.getClave());
 		}
+	}
+	
+	/**
+	 * Deuelve el objeto del modelo a una base de datos SQL Server
+	 *  
+	 * @return Objeto del modelo de la base de datos
+	 */
+	public IModelo obtenerModelo() {
+		if (this.modelo==null) {
+			this.modelo = new ModeloSqlServer(this);
+		}
+		return this.modelo;
 	}
 }
