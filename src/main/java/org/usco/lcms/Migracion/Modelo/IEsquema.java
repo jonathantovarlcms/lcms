@@ -6,4 +6,5 @@ public interface IEsquema {
 	void setNombre(String nombre);
 	String getNombre();
 	Map<String, ITabla> getTablas();
+	StringBuilder obtenerSql();
 }

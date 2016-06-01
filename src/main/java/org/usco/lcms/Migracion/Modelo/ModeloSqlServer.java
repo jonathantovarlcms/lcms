@@ -6,7 +6,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.usco.lcms.Migracion.Conectores.IConector;
+import org.usco.lcms.Migracion.Conectores.ConectorSqlServer;
 
 /**
  * Manejador del modelo de la base de dato SQL Server
@@ -14,7 +14,7 @@ import org.usco.lcms.Migracion.Conectores.IConector;
  * @author Jonathan Tovar Sanmiguel
  */
 public class ModeloSqlServer implements IModelo {
-	private IConector conector;
+	private ConectorSqlServer conector;
 	private Map<String, EsquemaSqlServer> listaEsquemas; 
 	
 	/**
@@ -22,10 +22,28 @@ public class ModeloSqlServer implements IModelo {
 	 * 
 	 * @param conector
 	 */
-	public ModeloSqlServer(IConector conector) {
+	public ModeloSqlServer(ConectorSqlServer conector) {
 		super();
 		
 		this.conector = conector;
+	}
+	
+	/**
+	 * Construye y devuelve la cadena SQL para construir el modelo
+	 * 
+	 * @return StringBuilder Cadena SQL
+	 */
+	public StringBuilder obtenerSql() {
+		StringBuilder retorno = new StringBuilder();
+		
+		retorno.append("CREATE DATABASE "+ this.conector.getBaseDatos() +";\n");
+		retorno.append("GO\n\n");
+		
+		for(EsquemaSqlServer esquema: this.listaEsquemas.values()) {
+			retorno.append(esquema.obtenerSql());
+		}
+		
+		return retorno;
 	}
 
 	/**
@@ -81,6 +99,7 @@ public class ModeloSqlServer implements IModelo {
 				listaTablas = esquema.getTablas();
 				if (!listaTablas.containsKey(nombreTabla)) {
 					tabla = new TablaSqlServer();
+					tabla.setEsquema(nombreEsquema);
 					tabla.setNombre(nombreTabla);
 					listaTablas.put(nombreTabla, tabla);
 				} else {

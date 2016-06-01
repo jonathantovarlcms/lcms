@@ -28,6 +28,15 @@ public class ModeloPostgres implements IModelo {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Construye y devuelve la cadena SQL para construir el modelo
+	 */
+	public StringBuilder obtenerSql() {
+		StringBuilder retorno = new StringBuilder();
+		
+		return retorno;
+	}
 
 	/**
 	 * Obtiene la información de la base de datos y construye e interpreta su estructura
