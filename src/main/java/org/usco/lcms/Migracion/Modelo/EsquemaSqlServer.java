@@ -1,9 +1,14 @@
 package org.usco.lcms.Migracion.Modelo;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.usco.lcms.Migracion.Conectores.IConector;
+
 public class EsquemaSqlServer implements IEsquema {
+	private IModelo modelo;
 	private String nombre;
 	private Map<String, ITabla> listaTablas;
 	
@@ -11,10 +16,31 @@ public class EsquemaSqlServer implements IEsquema {
 	 * Constructor
 	 * 
 	 */
-	public EsquemaSqlServer() {
+	public EsquemaSqlServer(IModelo modelo) {
 		super();
 		
+		this.modelo = modelo;
 		this.listaTablas = new HashMap<String, ITabla>();
+	}
+	
+	/**
+	 * Constructor basado en otro esquema
+	 * 
+	 */
+	public EsquemaSqlServer(IModelo modelo, IEsquema esquema) {
+		super();
+		
+		this.modelo = modelo;
+		this.listaTablas = new HashMap<String, ITabla>();
+		
+		this.setNombre(esquema.getNombre());
+		ITabla tabla, tablaReferencia;
+		Map<String, ITabla> listaTablasReferencia = esquema.getTablas();
+		for(String nombreTabla: listaTablasReferencia.keySet()) {
+			tablaReferencia = listaTablasReferencia.get(nombreTabla);
+			tabla = new TablaSqlServer(modelo, tablaReferencia);
+			this.listaTablas.put(nombreTabla, tabla);
+		}
 	}
 
 	/**
@@ -39,6 +65,29 @@ public class EsquemaSqlServer implements IEsquema {
 	}
 	
 	/**
+	 * Realiza la migracion al modelo configurado
+	 */
+	public void migrar() {
+		Statement sentencia = null;
+		IConector conector = this.modelo.getConector();
+		try {
+			conector.conectar();
+			sentencia = conector.getConexion().createStatement();
+			
+			if (!this.nombre.equals("dbo")) {
+				sentencia.execute("CREATE SCHEMA ["+ this.nombre +"] AUTHORIZATION [dbo]");
+			}
+			for(ITabla tabla: this.listaTablas.values()) {
+				tabla.migrar();
+			}
+        } catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+	         if (sentencia != null) try { sentencia.close(); } catch(Exception e) {}
+        }
+	}
+	
+	/**
 	 * Construye y devuelve la cadena SQL para construir el esquema
 	 * 
 	 * @return StringBuilder Cadena SQL
@@ -53,7 +102,6 @@ public class EsquemaSqlServer implements IEsquema {
 		
 		for(ITabla tabla: this.listaTablas.values()) {
 			retorno.append(tabla.obtenerSql());
-			retorno.append("GO\n\n");
 		}
 		
 		return retorno;

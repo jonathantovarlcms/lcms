@@ -106,9 +106,9 @@ public class ConectorSqlServer implements IConector {
 	 * @throws SQLException 
 	 */
 	public void conectar() throws ClassNotFoundException, SQLException {
-		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		
 		if (this.conexion == null) {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			
 			String CadenaConexion = "jdbc:sqlserver://"+this.getServidor()+":1433;databaseName=" + this.getBaseDatos() + ";CharacterSet=UTF-8";
 			this.conexion = DriverManager.getConnection(CadenaConexion, this.getUsuario(), this.getClave());
 		}

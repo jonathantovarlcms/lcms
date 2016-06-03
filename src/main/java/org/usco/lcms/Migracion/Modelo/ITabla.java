@@ -10,5 +10,7 @@ public interface ITabla {
 	void setNombre(String nombre);
 	String getNombre();
 	Map<String, IColumna> getColumnas();
+	Map<String, ILlave> getLlaves();
+	void migrar();
 	StringBuilder obtenerSql();
 }

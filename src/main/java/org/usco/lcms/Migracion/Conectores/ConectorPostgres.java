@@ -106,9 +106,9 @@ public class ConectorPostgres implements IConector {
 	 * @throws SQLException 
 	 */
 	public void conectar() throws ClassNotFoundException, SQLException {
-		Class.forName("org.postgresql.Driver");
-		
 		if (this.conexion == null) {
+			Class.forName("org.postgresql.Driver");
+			
 			String CadenaConexion = "jdbc:postgresql://"+this.getServidor()+":5432/" + this.getBaseDatos();
 			this.conexion = DriverManager.getConnection(CadenaConexion, this.getUsuario(), this.getClave());
 		}
