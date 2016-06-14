@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BasesDatos>
+	<BaseDatos>
+		<Motor>postgres</Motor>
+		<Servidor>localhost</Servidor>
+		<BaseDatos>lcms</BaseDatos>
+		<Usuario>postgres</Usuario>
+		<Clave>password</Clave>
+	</BaseDatos>
+	<BaseDatos>
+		<Motor>sqlserver</Motor>
+		<Servidor>localhost</Servidor>
+		<BaseDatos>lcms</BaseDatos>
+		<Usuario>sa</Usuario>
+		<Clave>password</Clave>
+	</BaseDatos>
+</BasesDatos>
